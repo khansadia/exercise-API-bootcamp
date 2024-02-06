@@ -1,30 +1,55 @@
-// Fetch attendee data from the API
-fetch('https://majazocom.github.io/Data/attendees.json')
-  .then(response => response.json())
-  .then(data => {
-    // Filter attendees who are attending
-    const attendingAttendees = data.filter(attendee => attendee.attending);
+async function fetcher() {
+    try {
+        const response = await fetch("https://majazocom.github.io/Data/attendees.json");
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
 
-    // Render attending attendees to the DOM
-    const attendeeList = document.getElementById('attendee-list');
-    attendingAttendees.forEach(attendee => {
-      const listItem = document.createElement('li');
-      listItem.textContent = `${attendee.name} (${attendee.company})`;
-      attendeeList.appendChild(listItem);
-    });
+        // Log the data to the console
+        console.log(data);
 
- // Filter attendees with allergies
-    const allergicAttendees = attendingAttendees.filter(attendee => attendee.allergy);
+        // Render attending attendees to the DOM
+        document.body.insertAdjacentHTML("beforeend", "<h1>Attendees</h1>");
+        for (const attendee of data) {
+            if (attendee.attending) {
+                document.body.insertAdjacentHTML("beforeend", `<p>${attendee.name}</p>`);
+            }
+        }
 
-    // Render allergic attendees to the DOM
-    const allergicList = document.getElementById('allergic-list');
-    allergicAttendees.forEach(attendee => {
-      const listItem = document.createElement('li');
-      listItem.textContent = `${attendee.name} (${attendee.allergy})`;
-      allergicList.appendChild(listItem);
-    });
-  })
-  .catch(error => {
-    console.error('Error fetching attendee data:', error);
-  });
- 
+        // Render allergic attendees to the DOM
+        document.body.insertAdjacentHTML("beforeend", "<h2>Attendees with Allergies</h2>");
+        for (const attendee of data) {
+            if (attendee.attending && attendee.allergies.length > 0) {
+                document.body.insertAdjacentHTML("beforeend", `<p>${attendee.name}</p>`);
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching and rendering attendee data:", error);
+    }
+}
+
+fetcher();
+
+            //  another way to do this
+  /* async function fetcher() {
+    const response = await fetch("https://majazocom.github.io/Data/attendees.json");
+    const data = await response.json();
+    console.log(data);
+    document.body.insertAdjacentHTML("beforeend", `<h1>Attendies</h1>`);
+    for (mon of data) {
+        if (mon.attending) {
+            document.body.insertAdjacentHTML("beforeend", `<p>${mon.name}</p>`);
+        }
+    }
+    document.body.insertAdjacentHTML("beforeend", `<h2>Attendies with Allergic</h2>`);
+    for (mon of data) {
+        if (mon.attending && mon.allergies.length > 0) {
+            document.body.insertAdjacentHTML("beforeend", `<p>${mon.name}</p>`);
+        }
+    }
+}
+fetcher(); */
+
+
+
